@@ -30,6 +30,18 @@ resource "aws_subnet" "public_a" {
   )
 }
 
+resource "aws_subnet" "public_b" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "${var.aws_region}b"
+  map_public_ip_on_launch = true
+
+  tags = merge(
+    var.default_tags,
+    { Name = "cs3-public-b" }
+  )
+}
+
 resource "aws_subnet" "private_a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.11.0/24"
@@ -38,6 +50,17 @@ resource "aws_subnet" "private_a" {
   tags = merge(
     var.default_tags,
     { Name = "cs3-private-a" }
+  )
+}
+
+resource "aws_subnet" "private_b" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.12.0/24"
+  availability_zone = "${var.aws_region}b"
+
+  tags = merge(
+    var.default_tags,
+    { Name = "cs3-private-b" }
   )
 }
 
@@ -57,6 +80,11 @@ resource "aws_route_table" "public" {
 
 resource "aws_route_table_association" "public_a" {
   subnet_id      = aws_subnet.public_a.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "public_b" {
+  subnet_id      = aws_subnet.public_b.id
   route_table_id = aws_route_table.public.id
 }
 

@@ -31,11 +31,11 @@ resource "aws_security_group" "ecs_service_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port                = 8000
-    to_port                  = 8000
-    protocol                 = "tcp"
-    security_groups          = [aws_security_group.alb_sg.id]
-    description              = "Allow ALB to reach ECS"
+    from_port       = 8000
+    to_port         = 8000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+    description     = "Allow ALB to reach ECS"
   }
 
   egress {
@@ -66,7 +66,10 @@ resource "aws_lb" "portal_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.public_a.id]
+  subnets = [
+    aws_subnet.public_a.id,
+    aws_subnet.public_b.id
+  ]
 
   tags = merge(
     var.default_tags,
@@ -79,6 +82,7 @@ resource "aws_lb_target_group" "portal_tg" {
   port     = 8000
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
+  target_type = "ip"
 
   health_check {
     path                = "/health"

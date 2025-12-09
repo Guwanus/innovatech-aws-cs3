@@ -25,9 +25,9 @@ resource "aws_ecs_task_definition" "portal" {
         }
       ]
       environment = [
-        { name = "DB_HOST",  value = aws_db_instance.employee_db.address },
-        { name = "DB_NAME",  value = var.db_name },
-        { name = "DB_USER",  value = var.db_username },
+        { name = "DB_HOST", value = aws_db_instance.employee_db.address },
+        { name = "DB_NAME", value = var.db_name },
+        { name = "DB_USER", value = var.db_username },
         { name = "DB_PASSWORD", value = var.db_password },
         { name = "AWS_REGION", value = var.aws_region },
         { name = "ONBOARDING_LAMBDA_ARN", value = aws_lambda_function.onboarding.arn },
@@ -55,8 +55,11 @@ resource "aws_ecs_service" "portal" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [aws_subnet.private_a.id]
-    security_groups = [aws_security_group.ecs_service_sg.id]
+    subnets = [
+      aws_subnet.private_a.id,
+      aws_subnet.private_b.id
+    ]
+    security_groups  = [aws_security_group.ecs_service_sg.id]
     assign_public_ip = false
   }
 
