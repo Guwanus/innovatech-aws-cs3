@@ -88,5 +88,49 @@ resource "aws_route_table_association" "public_b" {
   route_table_id = aws_route_table.public.id
 }
 
-# NAT is optional for this demo; Fargate can use a public subnet if you want to avoid NAT.
-# For a more "correct" setup you’d add a NAT gateway and private route table here.
+# Elastic IP voor NAT Gateway
+resource "aws_eip" "nat_eip" {
+  tags = merge(
+    var.default_tags,
+    { Name = "cs3-nat-eip" }
+  )
+}
+
+# NAT Gateway in een public subnet
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public_a.id
+
+  depends_on = [aws_internet_gateway.igw]
+
+  tags = merge(
+    var.default_tags,
+    { Name = "cs3-nat" }
+  )
+}
+
+# Route table voor private subnets: internet via NAT
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
+
+  tags = merge(
+    var.default_tags,
+    { Name = "cs3-private-rt" }
+  )
+}
+
+resource "aws_route_table_association" "private_a" {
+  subnet_id      = aws_subnet.private_a.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private_b" {
+  subnet_id      = aws_subnet.private_b.id
+  route_table_id = aws_route_table.private.id
+}
+

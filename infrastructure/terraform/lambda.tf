@@ -24,6 +24,14 @@ resource "aws_lambda_function" "onboarding" {
     }
   }
 
+vpc_config {
+    subnet_ids         = [
+      aws_subnet.private_a.id,
+      aws_subnet.private_b.id
+    ]
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
+
   timeout = 30
 
   depends_on = [
@@ -52,6 +60,14 @@ resource "aws_lambda_function" "offboarding" {
     }
   }
 
+  vpc_config {
+    subnet_ids         = [
+      aws_subnet.private_a.id,
+      aws_subnet.private_b.id
+    ]
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
+
   timeout = 30
 
   depends_on = [
@@ -59,4 +75,32 @@ resource "aws_lambda_function" "offboarding" {
   ]
 
   tags = var.default_tags
+}
+
+resource "aws_security_group" "lambda_sg" {
+  name        = "cs3-lambda-sg"
+  description = "Security group for Lambda functions"
+  vpc_id      = aws_vpc.main.id
+
+  # Lambda mag outbound overal naartoe (voor RDS verkeer)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    var.default_tags,
+    { Name = "cs3-lambda-sg" }
+  )
+}
+
+resource "aws_security_group_rule" "lambda_to_rds" {
+  type                     = "ingress"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.rds_sg.id
+  source_security_group_id = aws_security_group.lambda_sg.id
 }

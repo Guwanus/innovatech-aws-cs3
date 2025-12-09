@@ -88,6 +88,20 @@ data "aws_iam_policy_document" "lambda_policy" {
 
     resources = ["*"]
   }
+  statement {
+    sid    = "LambdaVPCAccess"
+    effect = "Allow"
+
+    actions = [
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DeleteNetworkInterface",
+      "ec2:AssignPrivateIpAddresses",
+      "ec2:UnassignPrivateIpAddresses"
+    ]
+
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "lambda_policy" {
