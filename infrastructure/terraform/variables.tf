@@ -7,6 +7,7 @@ variable "aws_region" {
 variable "db_username" {
   description = "DB master username"
   type        = string
+  default     = "admin"
 }
 
 variable "db_password" {
@@ -24,6 +25,12 @@ variable "db_name" {
 variable "portal_image" {
   description = "Docker image for the portal (ECR URI)"
   type        = string
+}
+
+variable "lambda_code_bucket" {
+  description = "S3 bucket that holds Lambda zip files"
+  type        = string
+  default     = "cs3-lambda" # of iets unieks wat jij hebt gemaakt
 }
 
 variable "default_tags" {
