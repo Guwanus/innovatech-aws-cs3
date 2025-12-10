@@ -1,10 +1,3 @@
-# Example: you uploaded lambda/onboarding.zip and offboarding.zip to S3
-
-variable "lambda_code_bucket" {
-  description = "S3 bucket holding Lambda deployment packages"
-  type        = string
-}
-
 resource "aws_lambda_function" "onboarding" {
   function_name = "cs3-onboarding"
   role          = aws_iam_role.lambda_onboarding_role.arn
