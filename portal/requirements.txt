@@ -3,3 +3,5 @@ uvicorn[standard]
 pymysql
 boto3
 pydantic[email]
+jinja2
+python-multipart

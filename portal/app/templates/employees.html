@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Innovatech Employee Portal</h1>
+
+<h2>Create new employee</h2>
+<form action="/ui/employees" method="post">
+    <label>
+        Name:
+        <input type="text" name="name" required>
+    </label>
+    <br>
+    <label>
+        Email:
+        <input type="email" name="email" required>
+    </label>
+    <br>
+    <label>
+        Department:
+        <input type="text" name="department" placeholder="IT / HR / Finance" required>
+    </label>
+    <br>
+    <label>
+        Role:
+        <input type="text" name="role" placeholder="Developer / Manager" required>
+    </label>
+    <br><br>
+    <button type="submit">Create employee</button>
+</form>
+
+<hr>
+
+<h2>Employees</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for emp in employees %}
+        <tr>
+            <td>{{ emp.employee_id }}</td>
+            <td>{{ emp.name }}</td>
+            <td>{{ emp.email }}</td>
+            <td>{{ emp.department }}</td>
+            <td>{{ emp.role }}</td>
+            <td>
+                <span class="status-pill
+                    {% if emp.status == 'pending' %}status-pending{% endif %}
+                    {% if emp.status == 'provisioned' %}status-provisioned{% endif %}
+                    {% if emp.status == 'disabled' %}status-disabled{% endif %}
+                ">
+                    {{ emp.status }}
+                </span>
+            </td>
+            <td>
+                <!-- Onboard -->
+                <form class="inline" action="/ui/employees/{{ emp.employee_id }}/onboard" method="post">
+                    <button type="submit">Onboard</button>
+                </form>
+
+                <!-- Offboard -->
+                <form class="inline" action="/ui/employees/{{ emp.employee_id }}/offboard" method="post">
+                    <button type="submit">Offboard</button>
+                </form>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="7">No employees found yet.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
