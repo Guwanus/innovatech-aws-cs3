@@ -55,6 +55,34 @@ resource "aws_iam_role" "lambda_offboarding_role" {
   tags = var.default_tags
 }
 
+# Lambda invoke role
+
+data "aws_iam_policy_document" "ecs_invoke_lambda" {
+  statement {
+    sid    = "AllowInvokeOnOnboardingOffboarding"
+    effect = "Allow"
+
+    actions = [
+      "lambda:InvokeFunction"
+    ]
+
+    resources = [
+      aws_lambda_function.onboarding.arn,
+      aws_lambda_function.offboarding.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "ecs_invoke_lambda" {
+  name   = "cs3-ecs-invoke-lambda"
+  policy = data.aws_iam_policy_document.ecs_invoke_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_invoke_lambda" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_invoke_lambda.arn
+}
+
 # Policies for Lambda: logs + IAM management
 
 data "aws_iam_policy_document" "lambda_policy" {

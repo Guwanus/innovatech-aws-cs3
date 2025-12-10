@@ -24,8 +24,8 @@ resource "aws_lambda_function" "onboarding" {
     }
   }
 
-vpc_config {
-    subnet_ids         = [
+  vpc_config {
+    subnet_ids = [
       aws_subnet.private_a.id,
       aws_subnet.private_b.id
     ]
@@ -61,7 +61,7 @@ resource "aws_lambda_function" "offboarding" {
   }
 
   vpc_config {
-    subnet_ids         = [
+    subnet_ids = [
       aws_subnet.private_a.id,
       aws_subnet.private_b.id
     ]

@@ -78,10 +78,10 @@ resource "aws_lb" "portal_alb" {
 }
 
 resource "aws_lb_target_group" "portal_tg" {
-  name     = "cs3-portal-tg"
-  port     = 8000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  name        = "cs3-portal-tg"
+  port        = 8000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
   target_type = "ip"
 
   health_check {
